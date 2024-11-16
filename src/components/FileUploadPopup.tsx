@@ -68,21 +68,20 @@ function FileUploadPopup({
             </Button>
           </AlertDialog.Cancel>
           <AlertDialog.Action>
-            <Spinner loading={isUploadInProgress} size="3">
-              <Button
-                title="Upload"
-                variant="solid"
-                onClick={handleUploadClick}
-                disabled={!selectedFile}
-                style={{
-                  ...styles.button,
-                  ...(!selectedFile ? {} : styles.uploadButton),
-                }}
-              >
-                <UploadIcon />
-                Upload
-              </Button>
-            </Spinner>
+            <Button
+              title="Upload"
+              variant="solid"
+              onClick={handleUploadClick}
+              disabled={!selectedFile}
+              style={{
+                ...styles.button,
+                ...(!selectedFile ? {} : styles.uploadButton),
+              }}
+            >
+              <UploadIcon />
+              Upload
+              <Spinner loading={isUploadInProgress} size="2" />
+            </Button>
           </AlertDialog.Action>
         </Flex>
       </AlertDialog.Content>
