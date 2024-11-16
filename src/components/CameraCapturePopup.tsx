@@ -6,19 +6,23 @@ import React, {
   useState,
   useRef,
   useEffect,
+  Dispatch,
+  SetStateAction,
 } from "react";
 
 type Props = {
   trigger: ReactNode;
   title: string;
   description?: string;
-  onUpload: (files: File) => Promise<void>;
+  setUrl: Dispatch<SetStateAction<string | undefined>>;
+  onUpload: (files: File) => Promise<string>;
 };
 
 function CameraCapturePopup({
   trigger,
   title,
   description,
+  setUrl,
   onUpload,
 }: Readonly<Props>) {
   const [selectedFile, setSelectedFile] = useState<File>();
@@ -42,7 +46,8 @@ function CameraCapturePopup({
   const handleUploadClick = async () => {
     if (selectedFile) {
       setIsUploadInProgress(true);
-      await onUpload(selectedFile);
+      const url = await onUpload(selectedFile);
+      setUrl(url);
       setIsUploadInProgress(false);
       stopCapture();
     }

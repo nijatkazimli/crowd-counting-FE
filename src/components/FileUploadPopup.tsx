@@ -2,8 +2,10 @@ import { UploadIcon } from "@radix-ui/react-icons";
 import { AlertDialog, Button, Flex, Spinner } from "@radix-ui/themes";
 import React, {
   CSSProperties,
+  Dispatch,
   InputHTMLAttributes,
   ReactNode,
+  SetStateAction,
   useState,
 } from "react";
 
@@ -12,7 +14,8 @@ type Props = {
   title: string;
   description?: string;
   accept?: InputHTMLAttributes<HTMLInputElement>["accept"];
-  onUpload: (files: File) => Promise<void>;
+  setUrl: Dispatch<SetStateAction<string | undefined>>;
+  onUpload: (files: File) => Promise<string>;
 };
 
 function FileUploadPopup({
@@ -20,6 +23,7 @@ function FileUploadPopup({
   title,
   description,
   accept,
+  setUrl,
   onUpload,
 }: Readonly<Props>) {
   const [selectedFile, setSelectedFile] = useState<File>();
@@ -34,7 +38,8 @@ function FileUploadPopup({
   const handleUploadClick = async () => {
     if (selectedFile) {
       setIsUploadInProgress(true);
-      await onUpload(selectedFile);
+      const url = await onUpload(selectedFile);
+      setUrl(url);
       setIsUploadInProgress(false);
     }
   };

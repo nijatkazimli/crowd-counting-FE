@@ -8,6 +8,7 @@ import CameraCapturePopup from "../CameraCapturePopup";
 
 const Count = () => {
   const [selectedModel, setSelectedModel] = useState<string>();
+  const [url, setUrl] = useState<string>();
 
   return (
     <Flex
@@ -58,7 +59,8 @@ const Count = () => {
           }
           title="Capture the Camera"
           description="Capture the camera for the crowd counting"
-          onUpload={async () => {}}
+          setUrl={setUrl}
+          onUpload={async () => "http://127.0.0.1:10000/devstoreaccount1/test/test.mp4?sv=2018-03-28&st=2024-11-16T17%3A09%3A05Z&se=2024-11-17T17%3A24%3A05Z&sr=c&sp=r&sig=jGGYvpl%2B3rQr1RcbCsW6S8nt1WLq0MDe%2FwrD329rMBU%3D"}
         />
         <FileUploadPopup
           trigger={
@@ -76,7 +78,8 @@ const Count = () => {
           title="Upload File"
           description="Upload the photo or video you want to use for the crowd counting"
           accept="image/*,video/*"
-          onUpload={async () => {}}
+          setUrl={setUrl}
+          onUpload={async () => 'http://127.0.0.1:10000/devstoreaccount1/test/test.mp4?sv=2018-03-28&st=2024-11-16T17%3A09%3A05Z&se=2024-11-17T17%3A24%3A05Z&sr=c&sp=r&sig=jGGYvpl%2B3rQr1RcbCsW6S8nt1WLq0MDe%2FwrD329rMBU%3D'}
         />
       </Flex>
 
@@ -94,9 +97,7 @@ const Count = () => {
 
       <ReactPlayer
         style={styles.preview}
-        url={
-          "http://127.0.0.1:10000/devstoreaccount1/test/test.mp4?sv=2018-03-28&st=2024-11-16T17%3A09%3A05Z&se=2024-11-17T17%3A24%3A05Z&sr=c&sp=r&sig=jGGYvpl%2B3rQr1RcbCsW6S8nt1WLq0MDe%2FwrD329rMBU%3D"
-        }
+        url={url}
         controls={true}
         width="60%"
         height="auto"
