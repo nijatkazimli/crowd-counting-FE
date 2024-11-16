@@ -13,6 +13,10 @@ const router = createBrowserRouter([
         element: <Pages.Count />,
       },
       {
+        path: '/history',
+        element: <Pages.History />,
+      },
+      {
         path: '*',
         element: <Pages.ErrorPage />,
       },

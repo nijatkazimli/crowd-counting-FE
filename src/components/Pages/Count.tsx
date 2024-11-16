@@ -6,9 +6,7 @@ import FileUploadPopup from "../FileUploadPopup";
 import { CameraIcon, MixerVerticalIcon, UploadIcon } from "@radix-ui/react-icons";
 import CameraCapturePopup from "../CameraCapturePopup";
 
-interface MediaSelectorProps {}
-
-const MediaSelector: React.FC<MediaSelectorProps> = () => {
+const Count = () => {
   const [selectedModel, setSelectedModel] = useState<string>();
 
   return (
@@ -158,4 +156,4 @@ const styles: {
   },
 };
 
-export default MediaSelector;
+export default Count;
