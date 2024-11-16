@@ -1,22 +1,24 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React from "react";
+import { NavLink } from "react-router-dom";
 
 const styles = {
   container: {
-    padding: '50px',
+    padding: "50px",
   },
   heading: {
-    fontSize: '72px',
-    margin: '0',
+    fontSize: "72px",
+    fontFamily: "Montserrat",
+    margin: "0",
   },
   message: {
-    fontSize: '24px',
-    color: '#555',
+    fontSize: "24px",
+    fontFamily: "Montserrat",
+    color: "#555",
   },
   link: {
-    fontSize: '18px',
-    color: '#007BFF',
-    textDecoration: 'none',
+    fontSize: "18px",
+    color: "#007BFF",
+    fontFamily: "Montserrat",
   },
 };
 
@@ -27,7 +29,9 @@ function ErrorPage() {
       <p style={styles.message}>
         Oops! The page you&#39;re looking for doesn&#39;t exist.
       </p>
-      <NavLink to="/">Go back to Home</NavLink>
+      <NavLink to="/" style={styles.link}>
+        Go back to Count
+      </NavLink>
     </div>
   );
 }
