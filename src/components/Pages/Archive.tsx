@@ -19,7 +19,7 @@ const Archive = () => {
           <Table.Row>
             <Table.ColumnHeaderCell>Media</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Type</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Count / Average Count per frame</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>Average count per frame</Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body style={styles.text}>
