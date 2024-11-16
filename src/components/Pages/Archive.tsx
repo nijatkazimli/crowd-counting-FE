@@ -1,7 +1,7 @@
 import React, { CSSProperties } from "react";
 import { Flex, Link, Table } from "@radix-ui/themes";
 
-const History = () => {
+const Archive = () => {
   return (
     <Flex
       direction="column"
@@ -55,4 +55,4 @@ const styles: {
   },
 };
 
-export default History;
+export default Archive;

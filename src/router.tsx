@@ -14,7 +14,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/history',
-        element: <Pages.History />,
+        element: <Pages.Archive />,
       },
       {
         path: '*',

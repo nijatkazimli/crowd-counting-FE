@@ -15,7 +15,7 @@ function Layout() {
             Count
           </NavLink>
           <NavLink to="/history" className="link">
-            History
+            Archive
           </NavLink>
         </div>
       </div>
