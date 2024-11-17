@@ -1,0 +1,88 @@
+diff --git a/node_modules/@radix-ui/themes/styles.css b/node_modules/@radix-ui/themes/styles.css
+index 45061cd..ae89409 100644
+--- a/node_modules/@radix-ui/themes/styles.css
++++ b/node_modules/@radix-ui/themes/styles.css
+@@ -26141,11 +26141,11 @@
+ }
+ .rt-r-lt-start::before,
+ .rt-r-lt-both::before {
+-  margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++  margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - (1em * var(--default-line-height) / 2));
+ }
+ .rt-r-lt-end::after,
+ .rt-r-lt-both::after {
+-  margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++  margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - (1em * var(--default-line-height) / 2));
+ }
+ @media (min-width: 520px) {
+   .xs\:rt-r-lt-normal::before,
+@@ -26163,11 +26163,11 @@
+   }
+   .xs\:rt-r-lt-start::before,
+   .xs\:rt-r-lt-both::before {
+-    margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++    margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - (1em * var(--default-line-height) / 2));
+   }
+   .xs\:rt-r-lt-end::after,
+   .xs\:rt-r-lt-both::after {
+-    margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++    margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - (1em * var(--default-line-height) / 2));
+   }
+ }
+ @media (min-width: 768px) {
+@@ -26186,11 +26186,11 @@
+   }
+   .sm\:rt-r-lt-start::before,
+   .sm\:rt-r-lt-both::before {
+-    margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++    margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - (1em * var(--default-line-height) / 2));
+   }
+   .sm\:rt-r-lt-end::after,
+   .sm\:rt-r-lt-both::after {
+-    margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++    margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - (1em * var(--default-line-height) / 2));
+   }
+ }
+ @media (min-width: 1024px) {
+@@ -26209,11 +26209,11 @@
+   }
+   .md\:rt-r-lt-start::before,
+   .md\:rt-r-lt-both::before {
+-    margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++    margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - (1em * var(--default-line-height) / 2));
+   }
+   .md\:rt-r-lt-end::after,
+   .md\:rt-r-lt-both::after {
+-    margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++    margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - (1em * var(--default-line-height) / 2));
+   }
+ }
+ @media (min-width: 1280px) {
+@@ -26232,11 +26232,11 @@
+   }
+   .lg\:rt-r-lt-start::before,
+   .lg\:rt-r-lt-both::before {
+-    margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++    margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - (1em * var(--default-line-height) / 2));
+   }
+   .lg\:rt-r-lt-end::after,
+   .lg\:rt-r-lt-both::after {
+-    margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++    margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - (1em * var(--default-line-height) / 2));
+   }
+ }
+ @media (min-width: 1640px) {
+@@ -26255,11 +26255,11 @@
+   }
+   .xl\:rt-r-lt-start::before,
+   .xl\:rt-r-lt-both::before {
+-    margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++    margin-bottom: calc(var(--leading-trim-start, var(--default-leading-trim-start)) - (1em * var(--default-line-height) / 2));
+   }
+   .xl\:rt-r-lt-end::after,
+   .xl\:rt-r-lt-both::after {
+-    margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - var(--line-height, calc(1em * var(--default-line-height))) / 2);
++    margin-top: calc(var(--leading-trim-end, var(--default-leading-trim-end)) - (1em * var(--default-line-height) / 2));
+   }
+ }
+ .rt-r-resize-none {
