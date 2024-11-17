@@ -1,14 +1,65 @@
-import React, { useState, CSSProperties } from "react";
+import React, { useState, CSSProperties, useEffect } from "react";
 import ReactPlayer from "react-player";
-import { Button, Flex, Select, Text } from "@radix-ui/themes";
-import { Media } from "../../constants";
+import { Button, Flex, Select, Spinner, Text } from "@radix-ui/themes";
+import { Media, MEDIA_TYPES } from "../../constants";
 import FileUploadPopup from "../FileUploadPopup";
-import { CameraIcon, MixerVerticalIcon, UploadIcon } from "@radix-ui/react-icons";
+import {
+  CameraIcon,
+  MixerVerticalIcon,
+  UploadIcon,
+} from "@radix-ui/react-icons";
 import CameraCapturePopup from "../CameraCapturePopup";
+import {
+  fetchModels,
+  MediaResponse,
+  ModelsResponse,
+  uploadFile,
+} from "../../api";
+import { getFileTypeFromExtension } from "../../utils";
+import { count } from "../../api/methods";
 
 const Count = () => {
+  const [models, setModels] = useState<ModelsResponse>([]);
   const [selectedModel, setSelectedModel] = useState<string>();
-  const [url, setUrl] = useState<string>();
+  const [media, setMedia] = useState<MediaResponse>();
+  const [mediaType, setMediaType] = useState<Media>();
+  const [isCountInProgress, setIsCountInProgress] = useState<boolean>(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const modelsResponse = await fetchModels();
+        setModels(modelsResponse);
+      } catch (error) {
+        setModels([]);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (media?.url) {
+      const type = getFileTypeFromExtension(media.url);
+      if (type !== "UNKNOWN") {
+        setMediaType(type);
+      } else {
+        setMediaType(undefined);
+      }
+    }
+  }, [media]);
+
+  const handleCountClick = async () => {
+    try {
+      if (media && selectedModel) {
+        setIsCountInProgress(true);
+        const countResponse = await count(media.id, Number(selectedModel));
+        setMedia(countResponse);
+        setIsCountInProgress(false);
+      }
+    } catch (error) {
+      setMedia(undefined);
+      setIsCountInProgress(false);
+    }
+  };
 
   return (
     <Flex
@@ -35,9 +86,11 @@ const Count = () => {
           />
           <Select.Content color="orange">
             <Select.Group>
-              <Select.Item value="A">A</Select.Item>
-              <Select.Item value="B">B</Select.Item>
-              <Select.Item value="C">C</Select.Item>
+              {models.map((model) => (
+                <Select.Item key={model.id} value={model.id.toString()}>
+                  {model.name}
+                </Select.Item>
+              ))}
             </Select.Group>
           </Select.Content>
         </Select.Root>
@@ -48,19 +101,18 @@ const Count = () => {
         <CameraCapturePopup
           trigger={
             <Button
-            title="Use Camera"
-            onClick={() => {}}
-            style={styles.button}
-            size="3"
-          >
-            <CameraIcon />
-            Use Camera
+              title="Use Camera"
+              style={styles.button}
+              size="3"
+            >
+              <CameraIcon />
+              Use Camera
             </Button>
           }
           title="Capture the Camera"
           description="Capture the camera for the crowd counting"
-          setUrl={setUrl}
-          onUpload={async () => "http://127.0.0.1:10000/devstoreaccount1/test/test.mp4?sv=2018-03-28&st=2024-11-16T17%3A09%3A05Z&se=2024-11-17T17%3A24%3A05Z&sr=c&sp=r&sig=jGGYvpl%2B3rQr1RcbCsW6S8nt1WLq0MDe%2FwrD329rMBU%3D"}
+          setMedia={setMedia}
+          onUpload={uploadFile}
         />
         <FileUploadPopup
           trigger={
@@ -73,37 +125,54 @@ const Count = () => {
               <UploadIcon />
               Upload File
             </Button>
-            // onUpload - upload the photo / video, set media type based on file, set the url, and preview
           }
           title="Upload File"
           description="Upload the photo or video you want to use for the crowd counting"
           accept="image/*,video/*"
-          setUrl={setUrl}
-          onUpload={async () => 'http://127.0.0.1:10000/devstoreaccount1/test/test.mp4?sv=2018-03-28&st=2024-11-16T17%3A09%3A05Z&se=2024-11-17T17%3A24%3A05Z&sr=c&sp=r&sig=jGGYvpl%2B3rQr1RcbCsW6S8nt1WLq0MDe%2FwrD329rMBU%3D'}
+          setMedia={setMedia}
+          onUpload={uploadFile}
         />
       </Flex>
 
       <Flex>
         <Button
           title="Count"
-          onClick={() => {}}
-          style={{ ...styles.button, ...styles.countButton }}
+          style={{ ...styles.button, ...(selectedModel && media) ? {} : styles.countButton }}
           size="4"
+          disabled={!selectedModel || !media}
+          onClick={handleCountClick}
         >
           <MixerVerticalIcon />
           Count
+          <Spinner loading={isCountInProgress} size="3" />
         </Button>
       </Flex>
 
-      <ReactPlayer
-        style={styles.preview}
-        url={url}
-        controls={true}
-        width="60%"
-        height="auto"
-        muted
-        loop
-      />
+      {mediaType && media?.url && (
+        <>
+          {mediaType === MEDIA_TYPES.IMAGE ? (
+            <img
+              src={media.url}
+              alt="Preview"
+              style={styles.preview}
+              width="60%"
+              height="auto"
+            />
+          ) : mediaType === MEDIA_TYPES.VIDEO ? (
+            <ReactPlayer
+              style={styles.preview}
+              url={media.url}
+              controls
+              width="60%"
+              height="auto"
+              muted
+              loop
+            />
+          ) : (
+            <p>Unknown media type</p>
+          )}
+        </>
+      )}
     </Flex>
   );
 };
@@ -144,7 +213,7 @@ const styles: {
     cursor: "pointer",
   },
   countButton: {
-    // backgroundColor: "#FF7B1D",
+    opacity: '60%',
   },
   text: {
     fontWeight: "bold",

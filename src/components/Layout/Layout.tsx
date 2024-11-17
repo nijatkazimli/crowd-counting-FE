@@ -7,9 +7,6 @@ function Layout() {
   return (
     <div>
       <div className="navbar">
-        {/* <NavLink to="/" className="logo-link">
-          <img src={Images.logo.src} alt={Images.logo.alt} className="logo" />
-        </NavLink> logo placeholder */}
         <div className="link-container">
           <NavLink to="/" className="link">
             Count

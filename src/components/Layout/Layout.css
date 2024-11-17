@@ -28,16 +28,3 @@
     color: orange;
     transform: scale(1.2);
 }
-
-.logo-link {
-    margin-left: 15px;
-}
-
-.logo {
-    height: 50px;
-    transition: transform 0.3s ease;
-}
-
-.logo:hover {
-    transform: scale(1.1);
-}

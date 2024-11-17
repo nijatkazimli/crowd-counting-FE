@@ -1,7 +1,22 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import { Flex, Link, Table } from "@radix-ui/themes";
+import { ArchiveRecord, fetchArchive } from "../../api";
+import { getFileTypeFromExtension, truncateUrl } from "../../utils";
 
 const Archive = () => {
+  const [archive, setArchive] = useState<ArchiveRecord[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const archiveResponse = await fetchArchive();
+        setArchive(archiveResponse);
+      } catch (error) {
+        setArchive([]);
+      }
+    })();
+  }, []);
+
   return (
     <Flex
       direction="column"
@@ -17,22 +32,35 @@ const Archive = () => {
       <Table.Root>
         <Table.Header style={styles.text}>
           <Table.Row>
-            <Table.ColumnHeaderCell>Media</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>Original</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>Annotated</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Type</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Average count per frame</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>Model</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>
+              Average count per frame
+            </Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body style={styles.text}>
-          <Table.Row>
-            <Table.RowHeaderCell><Link href="#">abcaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.jpg</Link></Table.RowHeaderCell>
-            <Table.Cell>image</Table.Cell>
-            <Table.Cell>12</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.RowHeaderCell><Link href="#">def.webm</Link></Table.RowHeaderCell>
-            <Table.Cell>video</Table.Cell>
-            <Table.Cell>23</Table.Cell>
-          </Table.Row>
+          {archive.map((record) => (
+            <Table.Row key={record.id}>
+              <Table.RowHeaderCell>
+                <Link href={record.original_url}>{truncateUrl(record.original_url)}</Link>
+              </Table.RowHeaderCell>
+              <Table.Cell>
+                {record.annotated_url ? (
+                  <Link href={record.annotated_url}>{truncateUrl(record.annotated_url)}</Link>
+                ) : (
+                  ""
+                )}
+              </Table.Cell>
+              <Table.Cell>
+                {getFileTypeFromExtension(record.original_url).toLocaleLowerCase()}
+              </Table.Cell>
+              <Table.Cell>{record.model_name ?? ""}</Table.Cell>
+              <Table.Cell>{record.averageCountPerFrame ?? ""}</Table.Cell>
+            </Table.Row>
+          ))}
         </Table.Body>
       </Table.Root>
     </Flex>

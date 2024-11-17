@@ -9,20 +9,21 @@ import React, {
   Dispatch,
   SetStateAction,
 } from "react";
+import { MediaResponse } from "../api";
 
 type Props = {
   trigger: ReactNode;
   title: string;
   description?: string;
-  setUrl: Dispatch<SetStateAction<string | undefined>>;
-  onUpload: (files: File) => Promise<string>;
+  setMedia: Dispatch<SetStateAction<MediaResponse | undefined>>;
+  onUpload: (files: File) => Promise<MediaResponse>;
 };
 
 function CameraCapturePopup({
   trigger,
   title,
   description,
-  setUrl,
+  setMedia,
   onUpload,
 }: Readonly<Props>) {
   const [selectedFile, setSelectedFile] = useState<File>();
@@ -46,10 +47,13 @@ function CameraCapturePopup({
   const handleUploadClick = async () => {
     if (selectedFile) {
       setIsUploadInProgress(true);
-      const url = await onUpload(selectedFile);
-      setUrl(url);
-      setIsUploadInProgress(false);
-      stopCapture();
+      try {
+        const response = await onUpload(selectedFile);
+        setMedia(response);
+      } finally {
+        setIsUploadInProgress(false);
+        stopCapture(); 
+      }
     }
   };
 

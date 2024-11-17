@@ -8,14 +8,15 @@ import React, {
   SetStateAction,
   useState,
 } from "react";
+import { MediaResponse } from "../api";
 
 type Props = {
   trigger: ReactNode;
   title: string;
   description?: string;
   accept?: InputHTMLAttributes<HTMLInputElement>["accept"];
-  setUrl: Dispatch<SetStateAction<string | undefined>>;
-  onUpload: (files: File) => Promise<string>;
+  setMedia: Dispatch<SetStateAction<MediaResponse | undefined>>;
+  onUpload: (files: File) => Promise<MediaResponse>;
 };
 
 function FileUploadPopup({
@@ -23,7 +24,7 @@ function FileUploadPopup({
   title,
   description,
   accept,
-  setUrl,
+  setMedia,
   onUpload,
 }: Readonly<Props>) {
   const [selectedFile, setSelectedFile] = useState<File>();
@@ -38,9 +39,12 @@ function FileUploadPopup({
   const handleUploadClick = async () => {
     if (selectedFile) {
       setIsUploadInProgress(true);
-      const url = await onUpload(selectedFile);
-      setUrl(url);
-      setIsUploadInProgress(false);
+      try {
+        const response = await onUpload(selectedFile);
+        setMedia(response);
+      } finally {
+        setIsUploadInProgress(false);
+      }
     }
   };
 
