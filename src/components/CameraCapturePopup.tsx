@@ -1,5 +1,12 @@
 import { ImageIcon, UploadIcon, VideoIcon } from "@radix-ui/react-icons";
-import { AlertDialog, Button, Flex, Spinner, Text } from "@radix-ui/themes";
+import {
+  AlertDialog,
+  Button,
+  Flex,
+  Select,
+  Spinner,
+  Text,
+} from "@radix-ui/themes";
 import React, {
   CSSProperties,
   ReactNode,
@@ -8,6 +15,7 @@ import React, {
   useEffect,
   Dispatch,
   SetStateAction,
+  useCallback,
 } from "react";
 import { MediaResponse } from "../api";
 
@@ -32,39 +40,28 @@ function CameraCapturePopup({
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [capturedMedia, setCapturedMedia] = useState<string | null>(null);
   const [isUploadInProgress, setIsUploadInProgress] = useState<boolean>(false);
+  const [availableCameras, setAvailableCameras] = useState<MediaDeviceInfo[]>(
+    []
+  );
+  const [selectedCamera, setSelectedCamera] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
 
-  useEffect(() => {
-    return () => {
-      stopCapture();
-    };
-  }, []);
-
-  const handleUploadClick = async () => {
-    if (selectedFile) {
-      setIsUploadInProgress(true);
-      try {
-        const response = await onUpload(selectedFile);
-        setMedia(response);
-      } finally {
-        setIsUploadInProgress(false);
-        stopCapture(); 
-      }
-    }
-  };
-
-  const startCapture = async () => {
+  const startCapture = useCallback(async () => {
     setSelectedFile(undefined);
     setCapturedMedia(null);
     setIsCapturing(true);
+
     const constraints = {
-      video: true,
+      video: {
+        deviceId: selectedCamera ? { exact: selectedCamera } : undefined,
+      },
       audio: false,
     };
+
     try {
       mediaStreamRef.current = await navigator.mediaDevices.getUserMedia(
         constraints
@@ -77,6 +74,39 @@ function CameraCapturePopup({
       console.error("Error accessing camera:", err);
       setIsCapturing(false);
     }
+  }, [selectedCamera]);
+
+  useEffect(() => {
+    const getCameras = async () => {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      setAvailableCameras(videoDevices);
+    };
+    getCameras();
+    return () => {
+      stopCapture();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (selectedCamera) {
+      startCapture();
+    }
+  }, [selectedCamera, startCapture]);
+
+  const handleUploadClick = async () => {
+    if (selectedFile) {
+      setIsUploadInProgress(true);
+      try {
+        const response = await onUpload(selectedFile);
+        setMedia(response);
+      } finally {
+        setIsUploadInProgress(false);
+        stopCapture();
+      }
+    }
   };
 
   const stopCapture = () => {
@@ -88,6 +118,7 @@ function CameraCapturePopup({
     setIsRecording(false);
     setSelectedFile(undefined);
     setCapturedMedia(null);
+    setSelectedCamera(null);
   };
 
   const handleCaptureClick = () => {
@@ -168,6 +199,33 @@ function CameraCapturePopup({
         >
           {description ?? ""}
         </AlertDialog.Description>
+
+        <Flex direction="column" gap="2" align="center" mt="4">
+          <Text>Select Camera:</Text>
+          <Select.Root
+            onValueChange={setSelectedCamera}
+            value={selectedCamera ?? ""}
+            disabled={availableCameras.length === 0}
+          >
+            <Select.Trigger
+              placeholder="Select"
+              title="Select Camera"
+              style={{
+                ...styles.selectTrigger,
+                backgroundColor: selectedCamera ? "orange" : "#FFE5CF",
+              }}
+            />
+            <Select.Content>
+              <Select.Group>
+                {availableCameras.map((camera) => (
+                  <Select.Item key={camera.deviceId} value={camera.deviceId}>
+                    {camera.label || `Camera ${camera.deviceId}`}
+                  </Select.Item>
+                ))}
+              </Select.Group>
+            </Select.Content>
+          </Select.Root>
+        </Flex>
 
         <Flex gap="3" mt="4" justify="center">
           <Button
@@ -270,7 +328,14 @@ function CameraCapturePopup({
             {!isVideoMode ? (
               <img src={capturedMedia} alt="Captured" style={styles.preview} />
             ) : (
-              <video controls src={capturedMedia} style={styles.preview} />
+              <video
+                controls
+                src={capturedMedia}
+                style={styles.preview}
+                loop
+                autoPlay
+                muted
+              />
             )}
           </div>
         )}
@@ -287,6 +352,7 @@ const styles: {
   video: CSSProperties;
   previewContainer: CSSProperties;
   preview: CSSProperties;
+  selectTrigger: CSSProperties;
 } = {
   button: {
     fontWeight: "bold",
@@ -322,6 +388,14 @@ const styles: {
   preview: {
     maxWidth: "100%",
     height: "auto",
+  },
+  selectTrigger: {
+    height: 30,
+    maxWidth: 180,
+    fontSize: 16,
+    fontFamily: "Montserrat",
+    fontWeight: "bold",
+    cursor: "pointer",
   },
 };
 
