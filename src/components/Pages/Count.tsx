@@ -16,14 +16,44 @@ import {
   uploadFile,
 } from "../../api";
 import { getFileTypeFromExtension } from "../../utils";
-import { count } from "../../api/methods";
+import { count, fetchRecord } from "../../api/methods";
+import { useLocation, useParams } from "react-router-dom";
 
 const Count = () => {
+  const location = useLocation();
+  const { id } = useParams<{ id: string }>();
+  const searchParams = new URLSearchParams(location.search);
+  const counted = searchParams.get("counted") === "true";
+
   const [models, setModels] = useState<ModelsResponse>([]);
   const [selectedModel, setSelectedModel] = useState<string>();
   const [media, setMedia] = useState<MediaResponse>();
   const [mediaType, setMediaType] = useState<Media>();
   const [isCountInProgress, setIsCountInProgress] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (id) {
+        try {
+          const record = await fetchRecord(id);
+          if (counted) {
+            setMedia({ id: Number(id), url: record.annotated_url! });
+          } else {
+            setMedia({ id: Number(id), url: record.original_url });
+          }
+        } catch {
+          setMedia(undefined);
+        } finally {
+          setIsCountInProgress(false);
+        }
+      } else {
+        setIsCountInProgress(false);
+        setMedia(undefined);
+      }
+    };
+
+    fetchData();
+  }, [id, counted]);
 
   useEffect(() => {
     (async () => {
@@ -75,7 +105,11 @@ const Count = () => {
     >
       <Flex gap="2">
         <Text style={styles.text}>Model:</Text>
-        <Select.Root value={selectedModel} onValueChange={setSelectedModel}>
+        <Select.Root
+          value={selectedModel}
+          onValueChange={setSelectedModel}
+          disabled={counted}
+        >
           <Select.Trigger
             placeholder="Select"
             title="Select Model"
@@ -100,11 +134,7 @@ const Count = () => {
         <Text style={styles.text}>Input:</Text>
         <CameraCapturePopup
           trigger={
-            <Button
-              title="Use Camera"
-              style={styles.button}
-              size="3"
-            >
+            <Button title="Use Camera" style={styles.button} size="3">
               <CameraIcon />
               Use Camera
             </Button>
@@ -137,9 +167,12 @@ const Count = () => {
       <Flex>
         <Button
           title="Count"
-          style={{ ...styles.button, ...(selectedModel && media) ? {} : styles.countButton }}
+          style={{
+            ...styles.button,
+            ...(selectedModel && media && !counted ? {} : styles.countButton),
+          }}
           size="4"
-          disabled={!selectedModel || !media}
+          disabled={!selectedModel || !media || counted}
           onClick={handleCountClick}
         >
           <MixerVerticalIcon />
@@ -213,7 +246,7 @@ const styles: {
     cursor: "pointer",
   },
   countButton: {
-    opacity: '60%',
+    opacity: "60%",
   },
   text: {
     fontWeight: "bold",

@@ -1,5 +1,11 @@
-import { v4 as uuidv4 } from 'uuid';
-import { ArchiveRecord, ModelsResponse, MediaResponse, ModelBody } from "./types";
+import { v4 as uuidv4 } from "uuid";
+import {
+  Record,
+  ArchiveRecord,
+  ModelsResponse,
+  MediaResponse,
+  ModelBody,
+} from "./types";
 
 const baseUrl = "http://localhost:5001";
 
@@ -51,11 +57,16 @@ async function apiMethod<ResponseType, RequestBodyType = undefined>({
 export async function uploadFile(file: File): Promise<MediaResponse> {
   const formData = new FormData();
 
-  const fileNameParts = file.name.split('.');
+  const fileNameParts = file.name.split(".");
   const fileExtension = fileNameParts.pop();
-  const fileNameWithoutExtension = fileNameParts.join('.');
+  const fileNameWithoutExtension = fileNameParts.join(".");
 
-  const newFileName = `${fileNameWithoutExtension}-${uuidv4()}.${fileExtension}`;
+  const cleanedFileName = fileNameWithoutExtension
+    .replace(/\s+/g, "-")
+    .replace(/[()]/g, "")
+    .replace(/[^\w-]+/g, "")
+    .toLowerCase();
+  const newFileName = `${cleanedFileName}-${uuidv4()}.${fileExtension?.toLowerCase()}`;
 
   const newFile = new File([file], newFileName, { type: file.type });
   formData.append("file", newFile);
@@ -86,6 +97,19 @@ export async function fetchModels(): Promise<ModelsResponse> {
   }
 }
 
+export async function fetchRecord(id: string): Promise<Record> {
+  try {
+    const response = await apiMethod<Record>({
+      method: "GET",
+      path: `/get/${id}`,
+    });
+    return response;
+  } catch (error) {
+    console.error("Failed to fetch record:", error);
+    throw error;
+  }
+}
+
 export async function fetchArchive(): Promise<ArchiveRecord[]> {
   try {
     const response = await apiMethod<ArchiveRecord[]>({
@@ -99,14 +123,17 @@ export async function fetchArchive(): Promise<ArchiveRecord[]> {
   }
 }
 
-export async function count(mediaId: number, modelId: number): Promise<MediaResponse> {
+export async function count(
+  mediaId: number,
+  modelId: number
+): Promise<MediaResponse> {
   try {
     const response = await apiMethod<MediaResponse, ModelBody>({
       method: "PUT",
       path: `/count/${mediaId}`,
       body: {
-        model_id : modelId,
-      }
+        model_id: modelId,
+      },
     });
     return response;
   } catch (error) {

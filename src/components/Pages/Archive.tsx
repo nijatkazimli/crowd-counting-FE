@@ -1,9 +1,16 @@
 import React, { CSSProperties, useEffect, useState } from "react";
-import { Flex, Link, Table } from "@radix-ui/themes";
+import { Button, Flex, Link, Table } from "@radix-ui/themes";
 import { ArchiveRecord, fetchArchive } from "../../api";
-import { getFileTypeFromExtension, truncateUrl } from "../../utils";
+import {
+  getFileTypeFromExtension,
+  roundNumber,
+  truncateUrl,
+} from "../../utils";
+import { PlayIcon } from "@radix-ui/react-icons";
+import { useNavigate } from "react-router-dom";
 
 const Archive = () => {
+  const navigate = useNavigate();
   const [archive, setArchive] = useState<ArchiveRecord[]>([]);
 
   useEffect(() => {
@@ -16,6 +23,14 @@ const Archive = () => {
       }
     })();
   }, []);
+
+  const onPreviewClick = (id: number, isCounted?: boolean) => {
+    if (isCounted) {
+      navigate(`/${id}?counted=true`);
+    } else {
+      navigate(`/${id}`);
+    }
+  };
 
   return (
     <Flex
@@ -45,20 +60,42 @@ const Archive = () => {
           {archive.map((record) => (
             <Table.Row key={record.id}>
               <Table.RowHeaderCell>
-                <Link href={record.original_url}>{truncateUrl(record.original_url)}</Link>
+                <Link href={record.original_url}>
+                  {truncateUrl(record.original_url)}
+                </Link>
+                <Button
+                  style={{ marginLeft: 8, cursor: "pointer" }}
+                  onClick={() => onPreviewClick(record.id)}
+                >
+                  <PlayIcon />
+                </Button>
               </Table.RowHeaderCell>
               <Table.Cell>
                 {record.annotated_url ? (
-                  <Link href={record.annotated_url}>{truncateUrl(record.annotated_url)}</Link>
+                  <>
+                    <Link href={record.annotated_url}>
+                      {truncateUrl(record.annotated_url)}
+                    </Link>
+                    <Button
+                      style={{ marginLeft: 8, cursor: "pointer" }}
+                      onClick={() => onPreviewClick(record.id, true)}
+                    >
+                      <PlayIcon />
+                    </Button>
+                  </>
                 ) : (
                   ""
                 )}
               </Table.Cell>
               <Table.Cell>
-                {getFileTypeFromExtension(record.original_url).toLocaleLowerCase()}
+                {getFileTypeFromExtension(
+                  record.original_url
+                ).toLocaleLowerCase()}
               </Table.Cell>
               <Table.Cell>{record.model_name ?? ""}</Table.Cell>
-              <Table.Cell>{record.averageCountPerFrame ?? ""}</Table.Cell>
+              <Table.Cell>
+                {roundNumber(record.averageCountPerFrame)}
+              </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>

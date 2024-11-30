@@ -52,4 +52,12 @@ export function truncateUrl(url: string) {
   const start = url.slice(0, 20);
   const end = url.slice(-8);
   return `${start}...${end}`;
-};
+}
+
+export function roundNumber(num: number | null | undefined): string {
+  if (num === null || num === undefined) return "";
+  const strNum = num.toString();
+  const decimalIndex = strNum.indexOf(".");
+  if (decimalIndex === -1) return strNum;
+  return strNum.slice(0, decimalIndex + 3);
+}

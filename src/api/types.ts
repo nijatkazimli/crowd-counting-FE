@@ -1,8 +1,12 @@
-export type ArchiveRecord = {
+export type Record = {
   id: number;
   original_url: string;
   annotated_url?: string | null;
   model_name?: string | null;
+  averageCountPerFrame?: number | null;
+}
+
+export type ArchiveRecord = Record & {
   averageCountPerFrame?: number | null;
 };
 

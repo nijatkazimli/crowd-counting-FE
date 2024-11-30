@@ -1,11 +1,11 @@
-import React from 'react';
-import { createBrowserRouter } from 'react-router-dom';
-import Layout from './components/Layout';
-import * as Pages from './components/Pages';
+import React from "react";
+import { createBrowserRouter } from "react-router-dom";
+import Layout from "./components/Layout";
+import * as Pages from "./components/Pages";
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <Layout />,
     children: [
       {
@@ -13,11 +13,15 @@ const router = createBrowserRouter([
         element: <Pages.Count />,
       },
       {
-        path: '/history',
+        path: "/:id",
+        element: <Pages.Count />,
+      },
+      {
+        path: "/history",
         element: <Pages.Archive />,
       },
       {
-        path: '*',
+        path: "*",
         element: <Pages.ErrorPage />,
       },
     ],
