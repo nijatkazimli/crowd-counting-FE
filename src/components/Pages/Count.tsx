@@ -17,10 +17,11 @@ import {
 } from "../../api";
 import { getFileTypeFromExtension } from "../../utils";
 import { count, fetchRecord } from "../../api/methods";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const Count = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const searchParams = new URLSearchParams(location.search);
   const counted = searchParams.get("counted") === "true";
@@ -134,7 +135,12 @@ const Count = () => {
         <Text style={styles.text}>Input:</Text>
         <CameraCapturePopup
           trigger={
-            <Button title="Use Camera" style={styles.button} size="3">
+            <Button
+              title="Use Camera"
+              style={styles.button}
+              size="3"
+              onClick={() => navigate("/")}
+            >
               <CameraIcon />
               Use Camera
             </Button>
@@ -148,7 +154,7 @@ const Count = () => {
           trigger={
             <Button
               title="Upload File"
-              onClick={() => {}}
+              onClick={() => navigate("/")}
               style={styles.button}
               size="3"
             >
