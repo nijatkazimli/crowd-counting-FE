@@ -14,6 +14,9 @@ function Layout() {
           <NavLink to="/history" className="link">
             Archive
           </NavLink>
+          <NavLink to="/insights" className="link">
+            Insights
+          </NavLink>
         </div>
       </div>
       <Outlet />

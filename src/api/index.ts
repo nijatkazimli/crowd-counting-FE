@@ -5,4 +5,5 @@ export type {
   MediaResponse,
   ModelsResponse,
   ModelBody,
+  Insights,
 } from "./types";

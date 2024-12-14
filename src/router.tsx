@@ -21,6 +21,10 @@ const router = createBrowserRouter([
         element: <Pages.Archive />,
       },
       {
+        path: "/insights",
+        element: <Pages.Insights />,
+      },      
+      {
         path: "*",
         element: <Pages.ErrorPage />,
       },

@@ -5,6 +5,7 @@ import {
   ModelsResponse,
   MediaResponse,
   ModelBody,
+  Insights,
 } from "./types";
 
 const baseUrl = "http://localhost:5001";
@@ -119,6 +120,19 @@ export async function fetchArchive(): Promise<ArchiveRecord[]> {
     return response;
   } catch (error) {
     console.error("Failed to fetch archive:", error);
+    throw error;
+  }
+}
+
+export async function fetchInsights(): Promise<Insights> {
+  try {
+    const response = await apiMethod<Insights>({
+      method: "GET",
+      path: "/insights",
+    });
+    return response;
+  } catch (error) {
+    console.error("Failed to fetch insights:", error);
     throw error;
   }
 }
