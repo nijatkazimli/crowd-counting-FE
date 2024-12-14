@@ -218,7 +218,7 @@ function CameraCapturePopup({
             <Select.Content>
               <Select.Group>
                 {availableCameras.map((camera) => (
-                  <Select.Item key={camera.deviceId} value={camera.deviceId}>
+                  <Select.Item key={camera.deviceId} value={camera.deviceId ?? 'NA'}>
                     {camera.label || `Camera ${camera.deviceId}`}
                   </Select.Item>
                 ))}
