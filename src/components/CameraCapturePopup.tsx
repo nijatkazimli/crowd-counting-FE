@@ -201,7 +201,7 @@ function CameraCapturePopup({
         </AlertDialog.Description>
 
         <Flex direction="column" gap="2" align="center" mt="4">
-          <Text>Select Camera:</Text>
+          <Text style={styles.text}>Select Camera:</Text>
           <Select.Root
             onValueChange={setSelectedCamera}
             value={selectedCamera ?? ""}
@@ -241,7 +241,7 @@ function CameraCapturePopup({
             Capture Photo
           </Button>
           <Button
-            title="Capture Video"
+            title="Record Video"
             variant="soft"
             onClick={() => {
               setIsVideoMode(true);
@@ -253,6 +253,10 @@ function CameraCapturePopup({
             Capture Video
           </Button>
         </Flex>
+
+        <Flex align="center" justify="center" mt="3">
+          <Text style={styles.text}>{`Selected Mode: ${isVideoMode ? 'Video' : 'Photo'}`}</Text>
+        </Flex>        
 
         <Flex gap="3" mt="4" justify="center">
           <AlertDialog.Cancel>
