@@ -118,3 +118,8 @@ export function insightsToBarChart(insights: Insights | undefined) {
   const series = transformDataToSeries(insights.data);
   return { xAxisData, series };
 }
+
+export function coalesceNullishString(str: string | null | undefined) {
+  if (!str) return 'NA';
+  return str;
+}

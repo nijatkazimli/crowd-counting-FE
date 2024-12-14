@@ -27,10 +27,12 @@ const Count = () => {
   const counted = searchParams.get("counted") === "true";
 
   const [models, setModels] = useState<ModelsResponse>([]);
+  const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>();
   const [media, setMedia] = useState<MediaResponse>();
   const [mediaType, setMediaType] = useState<Media>();
   const [isCountInProgress, setIsCountInProgress] = useState<boolean>(false);
+  const [areCamerasLoading, setAreCamerasLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,12 +59,32 @@ const Count = () => {
   }, [id, counted]);
 
   useEffect(() => {
+    let mediaStream: MediaStream | null = null;    
     (async () => {
       try {
         const modelsResponse = await fetchModels();
         setModels(modelsResponse);
       } catch (error) {
         setModels([]);
+      }
+    })();
+    (async() => {
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+
+        // stop capturing once it gets the permissions
+        if (mediaStream) {
+          mediaStream.getTracks().forEach((track) => track.stop());
+          mediaStream = null;
+        }
+        setCameras(videoDevices);
+        setAreCamerasLoading(false);
+      } catch (error) {
+        setCameras([]);
+        setAreCamerasLoading(false);
+        console.error('Failed to get cameras');
       }
     })();
   }, []);
@@ -116,7 +138,7 @@ const Count = () => {
             title="Select Model"
             style={{
               ...styles.selectTrigger,
-              backgroundColor: !!selectedModel ? "orange" : "#FFE5CF",
+              backgroundColor: selectedModel ? "orange" : "#FFE5CF",
             }}
           />
           <Select.Content color="orange">
@@ -137,16 +159,22 @@ const Count = () => {
           trigger={
             <Button
               title="Use Camera"
-              style={styles.button}
+              style={{
+                ...styles.button,
+                ...(cameras.length ? {} : styles.disabledButton),
+              }}
               size="3"
+              disabled={!cameras.length}
               onClick={() => navigate("/")}
             >
               <CameraIcon />
               Use Camera
+              <Spinner loading={areCamerasLoading} size="3" />              
             </Button>
           }
           title="Capture the Camera"
           description="Capture the camera for the crowd counting"
+          cameras={cameras}
           setMedia={setMedia}
           onUpload={uploadFile}
         />
@@ -175,7 +203,7 @@ const Count = () => {
           title="Count"
           style={{
             ...styles.button,
-            ...(selectedModel && media && !counted ? {} : styles.countButton),
+            ...(selectedModel && media && !counted ? {} : styles.disabledButton),
           }}
           size="4"
           disabled={!selectedModel || !media || counted}
@@ -221,7 +249,7 @@ const styles: {
   selectTrigger: CSSProperties;
   input: CSSProperties;
   button: CSSProperties;
-  countButton: CSSProperties;
+  disabledButton: CSSProperties;
   text: CSSProperties;
   preview: CSSProperties;
 } = {
@@ -251,7 +279,7 @@ const styles: {
     boxShadow: "inset 0 0 0 1px #cccccc",
     cursor: "pointer",
   },
-  countButton: {
+  disabledButton: {
     opacity: "60%",
   },
   text: {

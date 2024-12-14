@@ -18,10 +18,12 @@ import React, {
   useCallback,
 } from "react";
 import { MediaResponse } from "../api";
+import { coalesceNullishString } from "../utils";
 
 type Props = {
   trigger: ReactNode;
   title: string;
+  cameras: MediaDeviceInfo[],
   description?: string;
   setMedia: Dispatch<SetStateAction<MediaResponse | undefined>>;
   onUpload: (files: File) => Promise<MediaResponse>;
@@ -30,6 +32,7 @@ type Props = {
 function CameraCapturePopup({
   trigger,
   title,
+  cameras,
   description,
   setMedia,
   onUpload,
@@ -40,9 +43,6 @@ function CameraCapturePopup({
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [capturedMedia, setCapturedMedia] = useState<string | null>(null);
   const [isUploadInProgress, setIsUploadInProgress] = useState<boolean>(false);
-  const [availableCameras, setAvailableCameras] = useState<MediaDeviceInfo[]>(
-    []
-  );
   const [selectedCamera, setSelectedCamera] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -75,20 +75,6 @@ function CameraCapturePopup({
       setIsCapturing(false);
     }
   }, [selectedCamera]);
-
-  useEffect(() => {
-    const getCameras = async () => {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
-      setAvailableCameras(videoDevices);
-    };
-    getCameras();
-    return () => {
-      stopCapture();
-    };
-  }, []);
 
   useEffect(() => {
     if (selectedCamera) {
@@ -205,7 +191,7 @@ function CameraCapturePopup({
           <Select.Root
             onValueChange={setSelectedCamera}
             value={selectedCamera ?? ""}
-            disabled={availableCameras.length === 0}
+            disabled={cameras && cameras.length === 0}
           >
             <Select.Trigger
               placeholder="Select"
@@ -217,8 +203,8 @@ function CameraCapturePopup({
             />
             <Select.Content>
               <Select.Group>
-                {availableCameras.map((camera) => (
-                  <Select.Item key={camera.deviceId} value={camera.deviceId ?? 'NA'}>
+                {cameras?.map((camera) => (
+                  <Select.Item key={coalesceNullishString(camera.deviceId)} value={coalesceNullishString(camera.deviceId)}>
                     {camera.label || `Camera ${camera.deviceId}`}
                   </Select.Item>
                 ))}
